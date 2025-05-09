@@ -55,42 +55,42 @@ pipeline{
                 }
             }
         }
-//         stage ('maven compile') {
-//             steps {
-//                 sh 'mvn clean compile'
-//             }
-//         }
-//         stage ('maven Test') {
-//             steps {
-//                 sh 'mvn test'
-//             }
-//         }
-//
-//         stage ('maven clean verify') {
-//             steps {
-//                 sh 'mvn clean verify'
-//             }
-//         }
-//
-//
-//         stage("Sonarqube Analysis "){
-//             steps{
-//                 withSonarQubeEnv('merlin-sonar-server') {
-//                     sh ''' mvn sonar:sonar \
-//                     -Dsonar.projectName=merlin-acn-upskills \
-//                     -Dsonar.java.binaries=. \
-//                     -Dsonar.projectKey=merlin-acn-upskills-key '''
-//                 }
-//             }
-//         }
-//
-//         stage("quality gate"){
-//             steps {
-//                 script {
-//                   waitForQualityGate abortPipeline: false, credentialsId: 'merlin-sonar-token'
-//                 }
-//            }
-//         }
+        stage ('maven compile') {
+            steps {
+                sh 'mvn clean compile'
+            }
+        }
+        stage ('maven Test') {
+            steps {
+                sh 'mvn test'
+            }
+        }
+
+        stage ('maven clean verify') {
+            steps {
+                sh 'mvn clean verify'
+            }
+        }
+
+
+        stage("Sonarqube Analysis "){
+            steps{
+                withSonarQubeEnv('merlin-sonar-server') {
+                    sh ''' mvn sonar:sonar \
+                    -Dsonar.projectName=merlin-acn-upskills \
+                    -Dsonar.java.binaries=. \
+                    -Dsonar.projectKey=merlin-acn-upskills-key '''
+                }
+            }
+        }
+
+        stage("quality gate"){
+            steps {
+                script {
+                  waitForQualityGate abortPipeline: false, credentialsId: 'merlin-sonar-token'
+                }
+           }
+        }
         stage ('Build Jar file'){
             steps{
                 sh 'mvn clean install'
@@ -99,24 +99,24 @@ pipeline{
             }
         }
 
-//         stage('TRIVY FS SCAN') {
-//            steps {
-//                sh '''
-//                     trivy fs --format table .
-//                     trivy fs --format table --exit-code 1 --severity CRITICAL .
-//                '''
-//            }
-//         }
-//
-//
-//         stage("OWASP Dependency Check"){
-//             steps{
-//                 withCredentials([string(credentialsId: 'nvd-api-key', variable: 'NVD_API_KEY')]) {
-//                     dependencyCheck additionalArguments: "--scan ./ --format XML --nvdApiKey ${NVD_API_KEY}", odcInstallation: 'DPD-Check'
-//                     dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
-//                 }
-//             }
-//         }
+        stage('TRIVY FS SCAN') {
+           steps {
+               sh '''
+                    trivy fs --format table .
+                    trivy fs --format table --exit-code 1 --severity CRITICAL .
+               '''
+           }
+        }
+
+
+        stage("OWASP Dependency Check"){
+            steps{
+                withCredentials([string(credentialsId: 'nvd-api-key', variable: 'NVD_API_KEY')]) {
+                    dependencyCheck additionalArguments: "--scan ./ --format XML --nvdApiKey ${NVD_API_KEY}", odcInstallation: 'DPD-Check'
+                    dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
+                }
+            }
+        }
 
         stage('Build and Push Docker Image') {
            environment {
@@ -135,12 +135,12 @@ pipeline{
              }
            }
         }
-//         stage("TRIVY DOCKER IMAGE SCAN"){
-//             steps{
-//                 sh "trivy image devsahamerlin/tasksmanager:${BUILD_NUMBER} --format table"
-//                 //sh "trivy image devsahamerlin/tasksmanager:${BUILD_NUMBER} --format table --exit-code 1 --severity CRITICAL"
-//             }
-//         }
+        stage("TRIVY DOCKER IMAGE SCAN"){
+            steps{
+                sh "trivy image devsahamerlin/tasksmanager:${BUILD_NUMBER} --format table"
+                //sh "trivy image devsahamerlin/tasksmanager:${BUILD_NUMBER} --format table --exit-code 1 --severity CRITICAL"
+            }
+        }
 
         stage ('Deploy to container'){
             steps{
@@ -160,25 +160,25 @@ pipeline{
             }
         }
 
-        stage('Update Deployment File') {
-                environment {
-                    GIT_REPO_NAME = "acn-devsecops-upskills"
-                    GIT_USER_NAME = "devsahamerlin"
-                }
-                steps {
-                    withCredentials([string(credentialsId: 'merlin-github-user-credentials', variable: 'GITHUB_TOKEN')]) {
-                        sh '''
-                            git config user.email "devsahamerlin@gmail.com"
-                            git config user.name "Saha Merlin Jenkins"
-                            BUILD_NUMBER=${BUILD_NUMBER}
-                            sed -i "s/${IMAGE_TAG_VERSION}/${BUILD_NUMBER}/g" k8s/manifests/deployment.yml
-                            git add k8s/manifests/deployment.yml
-                            git commit -m "Update deployment image to version ${BUILD_NUMBER}"
-                            git push https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME} HEAD:main
-                        '''
-                    }
-                }
-        }
+//         stage('Update Deployment File') {
+//                 environment {
+//                     GIT_REPO_NAME = "acn-devsecops-upskills"
+//                     GIT_USER_NAME = "devsahamerlin"
+//                 }
+//                 steps {
+//                     withCredentials([string(credentialsId: 'gitops-user-secret-text', variable: 'GITHUB_TOKEN')]) {
+//                         sh '''
+//                             git config user.email "devsahamerlin@gmail.com"
+//                             git config user.name "Saha Merlin Jenkins"
+//                             BUILD_NUMBER=${BUILD_NUMBER}
+//                             sed -i "s/${IMAGE_TAG_VERSION}/${BUILD_NUMBER}/g" k8s/manifests/deployment.yml
+//                             git add k8s/manifests/deployment.yml
+//                             git commit -m "Update deployment image to version ${BUILD_NUMBER}"
+//                             git push https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME} HEAD:main
+//                         '''
+//                     }
+//                 }
+//         }
     }
 
 //     post {
