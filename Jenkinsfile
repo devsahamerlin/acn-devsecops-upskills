@@ -50,7 +50,7 @@ pipeline{
             steps {
                 script {
                     git branch: 'main',
-                    credentialsId: 'github-user-credentials',
+                    credentialsId: 'merlin-github-user-credentials',
                     url: 'https://github.com/devsahamerlin/acn-devsecops-upskills.git'
                 }
             }
@@ -95,7 +95,7 @@ pipeline{
         stage("quality gate"){
             steps {
                 script {
-                  waitForQualityGate abortPipeline: false, credentialsId: 'sonar-token'
+                  waitForQualityGate abortPipeline: false, credentialsId: 'merlin-sonar-token'
                 }
            }
         }
@@ -129,7 +129,7 @@ pipeline{
         stage('Build and Push Docker Image') {
            environment {
              DOCKER_IMAGE = "devsahamerlin/tasksmanager:${BUILD_NUMBER}"
-             REGISTRY_CREDENTIALS = credentials('docker')
+             REGISTRY_CREDENTIALS = credentials('merlin-docker')
            }
            steps {
              script {
@@ -145,7 +145,7 @@ pipeline{
         }
         stage("TRIVY DOCKER IMAGE SCAN"){
             steps{
-                sh "trivy image devsahamerlin/tasksmanager:16 --format table"
+                sh "trivy image devsahamerlin/tasksmanager:${BUILD_NUMBER} --format table"
                 //sh "trivy image devsahamerlin/tasksmanager:${BUILD_NUMBER} --format table --exit-code 1 --severity CRITICAL"
             }
         }
@@ -169,25 +169,25 @@ pipeline{
             }
         }
 
-        stage('Update Deployment File') {
-                environment {
-                    GIT_REPO_NAME = "acn-taskmanger-upskills"
-                    GIT_USER_NAME = "devsahamerlin"
-                }
-                steps {
-                    withCredentials([string(credentialsId: 'gitops-user-secret-text', variable: 'GITHUB_TOKEN')]) {
-                        sh '''
-                            git config user.email "devsahamerlin@gmail.com"
-                            git config user.name "Saha Merlin"
-                            BUILD_NUMBER=${BUILD_NUMBER}
-                            sed -i "s/${IMAGE_TAG_VERSION}/${BUILD_NUMBER}/g" k8s/manifests/deployment.yml
-                            git add k8s/manifests/deployment.yml
-                            git commit -m "Update deployment image to version ${BUILD_NUMBER}"
-                            git push https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME} HEAD:main
-                        '''
-                    }
-                }
-        }
+//         stage('Update Deployment File') {
+//                 environment {
+//                     GIT_REPO_NAME = "acn-taskmanger-upskills"
+//                     GIT_USER_NAME = "devsahamerlin"
+//                 }
+//                 steps {
+//                     withCredentials([string(credentialsId: 'gitops-user-secret-text', variable: 'GITHUB_TOKEN')]) {
+//                         sh '''
+//                             git config user.email "devsahamerlin@gmail.com"
+//                             git config user.name "Saha Merlin"
+//                             BUILD_NUMBER=${BUILD_NUMBER}
+//                             sed -i "s/${IMAGE_TAG_VERSION}/${BUILD_NUMBER}/g" k8s/manifests/deployment.yml
+//                             git add k8s/manifests/deployment.yml
+//                             git commit -m "Update deployment image to version ${BUILD_NUMBER}"
+//                             git push https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME} HEAD:main
+//                         '''
+//                     }
+//                 }
+//         }
     }
 
 //     post {

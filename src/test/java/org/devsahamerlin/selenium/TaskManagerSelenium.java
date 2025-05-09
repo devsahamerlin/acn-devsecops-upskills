@@ -33,7 +33,7 @@ class TaskManagerSelenium {
     private WebDriver driver;
     private WebDriverWait wait;
 
-    private final String baseUrl = System.getProperty("selenium.url", "http://129.151.255.201:8083");
+    private final String baseUrl = System.getProperty("selenium.url", "http://129.151.250.111:8083");
 
     @BeforeAll
     static void setupClass() {
