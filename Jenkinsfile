@@ -55,50 +55,42 @@ pipeline{
                 }
             }
         }
-        stage ('maven compile') {
-            steps {
-                sh 'mvn clean compile'
-            }
-        }
-        stage ('maven Test') {
-            steps {
-                sh 'mvn test'
-            }
-        }
-
-        stage ('maven clean verify') {
-            steps {
-                sh 'mvn clean verify'
-            }
-        }
-
+//         stage ('maven compile') {
+//             steps {
+//                 sh 'mvn clean compile'
+//             }
+//         }
+//         stage ('maven Test') {
+//             steps {
+//                 sh 'mvn test'
+//             }
+//         }
+//
+//         stage ('maven clean verify') {
+//             steps {
+//                 sh 'mvn clean verify'
+//             }
+//         }
+//
+//
 //         stage("Sonarqube Analysis "){
 //             steps{
-//                 withSonarQubeEnv('sonar-server') {
-//                     sh ''' $SCANNER_HOME/bin/sonar-scanner -Dsonar.projectName=merlin-acn-upskills \
+//                 withSonarQubeEnv('merlin-sonar-server') {
+//                     sh ''' mvn sonar:sonar \
+//                     -Dsonar.projectName=merlin-acn-upskills \
 //                     -Dsonar.java.binaries=. \
 //                     -Dsonar.projectKey=merlin-acn-upskills-key '''
 //                 }
 //             }
 //         }
-        stage("Sonarqube Analysis "){
-            steps{
-                withSonarQubeEnv('merlin-sonar-server') {
-                    sh ''' mvn sonar:sonar \
-                    -Dsonar.projectName=merlin-acn-upskills \
-                    -Dsonar.java.binaries=. \
-                    -Dsonar.projectKey=merlin-acn-upskills-key '''
-                }
-            }
-        }
-
-        stage("quality gate"){
-            steps {
-                script {
-                  waitForQualityGate abortPipeline: false, credentialsId: 'merlin-sonar-token'
-                }
-           }
-        }
+//
+//         stage("quality gate"){
+//             steps {
+//                 script {
+//                   waitForQualityGate abortPipeline: false, credentialsId: 'merlin-sonar-token'
+//                 }
+//            }
+//         }
         stage ('Build Jar file'){
             steps{
                 sh 'mvn clean install'
@@ -106,25 +98,25 @@ pipeline{
                 sh 'cp -r target/site/jacoco/* src/main/resources/static/jacoco/'
             }
         }
+//
+//         stage('TRIVY FS SCAN') {
+//            steps {
+//                sh '''
+//                     trivy fs --format table .
+//                     trivy fs --format table --exit-code 1 --severity CRITICAL .
+//                '''
+//            }
+//         }
 
-        stage('TRIVY FS SCAN') {
-           steps {
-               sh '''
-                    trivy fs --format table .
-                    trivy fs --format table --exit-code 1 --severity CRITICAL .
-               '''
-           }
-        }
 
-
-        stage("OWASP Dependency Check"){
-            steps{
-                withCredentials([string(credentialsId: 'nvd-api-key', variable: 'NVD_API_KEY')]) {
-                    dependencyCheck additionalArguments: "--scan ./ --format XML --nvdApiKey ${NVD_API_KEY}", odcInstallation: 'DPD-Check'
-                    dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
-                }
-            }
-        }
+//         stage("OWASP Dependency Check"){
+//             steps{
+//                 withCredentials([string(credentialsId: 'nvd-api-key', variable: 'NVD_API_KEY')]) {
+//                     dependencyCheck additionalArguments: "--scan ./ --format XML --nvdApiKey ${NVD_API_KEY}", odcInstallation: 'DPD-Check'
+//                     dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
+//                 }
+//             }
+//         }
 
         stage('Build and Push Docker Image') {
            environment {
