@@ -91,13 +91,13 @@ pipeline{
 //                 }
 //            }
 //         }
-//         stage ('Build Jar file'){
-//             steps{
-//                 sh 'mvn clean install'
-//                 sh 'mkdir -p src/main/resources/static/jacoco'
-//                 sh 'cp -r target/site/jacoco/* src/main/resources/static/jacoco/'
-//             }
-//         }
+        stage ('Build Jar file'){
+            steps{
+                sh 'mvn clean install'
+                sh 'mkdir -p src/main/resources/static/jacoco'
+                sh 'cp -r target/site/jacoco/* src/main/resources/static/jacoco/'
+            }
+        }
 
 //         stage('TRIVY FS SCAN') {
 //            steps {
