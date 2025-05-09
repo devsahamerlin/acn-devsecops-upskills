@@ -83,7 +83,7 @@ pipeline{
 //         }
         stage("Sonarqube Analysis "){
             steps{
-                withSonarQubeEnv('sonar-server') {
+                withSonarQubeEnv('merlin-sonar-server') {
                     sh ''' mvn sonar:sonar \
                     -Dsonar.projectName=merlin-acn-upskills \
                     -Dsonar.java.binaries=. \
@@ -137,7 +137,7 @@ pipeline{
                 "sudo docker images | grep devsahamerlin/tasksmanager*"
                 sh "sudo docker build -t ${DOCKER_IMAGE} ."
                 def dockerImage = docker.image("${DOCKER_IMAGE}")
-                 docker.withRegistry('https://index.docker.io/v1/', "docker") {
+                 docker.withRegistry('https://index.docker.io/v1/', "merlin-docker") {
                      dockerImage.push()
                  }
              }
