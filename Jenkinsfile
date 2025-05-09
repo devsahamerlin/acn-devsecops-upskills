@@ -145,10 +145,10 @@ pipeline{
         stage ('Deploy to container'){
             steps{
                 sh """
-                    sudo docker ps -a --filter name=tasksmanager -q | xargs -r sudo docker stop
-                    sudo docker ps -a --filter name=tasksmanager -q | xargs -r sudo docker rm -f
+                    sudo docker ps -a --filter name=merlin-tasksmanager -q | xargs -r sudo docker stop
+                    sudo docker ps -a --filter name=merlin-tasksmanager -q | xargs -r sudo docker rm -f
                     sudo docker images devsahamerlin/tasksmanager -q | xargs -r sudo docker rmi -f
-                    sudo docker run -d --name tasksmanager -p 8083:8082 devsahamerlin/tasksmanager:${BUILD_NUMBER}
+                    sudo docker run -d --name merlin-asksmanager -p 8083:8082 devsahamerlin/tasksmanager:${BUILD_NUMBER}
                 """
             }
         }
