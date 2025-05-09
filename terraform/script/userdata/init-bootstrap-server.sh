@@ -19,10 +19,16 @@ sudo apt-get install docker.io -y
 sudo usermod -aG docker $USER
 newgrp docker
 sudo chown -R $USER:docker /var/run/docker.sock
-sudo chmod 777 /var/run/docker.sock
+sudo chmod 755 /var/run/docker.sock
 #sudo chmod 777 /var/run/docker.sock
 
 #sudo chown root:docker /var/run/docker.sock
+
+wget https://github.com/mozilla/geckodriver/releases/download/v0.33.0/geckodriver-v0.33.0-linux-aarch64.tar.gz
+tar -xvzf geckodriver-v0.33.0-linux-aarch64.tar.gz
+chmod +x geckodriver
+sudo mv geckodriver /home/ubuntu/
+
 
 sudo apt install tree -y
 
@@ -45,6 +51,7 @@ sudo mkdir /etc/ansible/
 sudo iptables -I INPUT 6 -m state --state NEW -p tcp --dport 80 -j ACCEPT
 sudo iptables -I INPUT 6 -m state --state NEW -p tcp --dport 8088 -j ACCEPT
 sudo iptables -I INPUT 6 -m state --state NEW -p tcp --dport 8082 -j ACCEPT
+sudo iptables -I INPUT 6 -m state --state NEW -p tcp --dport 8081 -j ACCEPT
 sudo iptables -I INPUT 6 -m state --state NEW -p tcp --dport 8083 -j ACCEPT
 sudo iptables -I INPUT 6 -m state --state NEW -p tcp --dport 443 -j ACCEPT
 

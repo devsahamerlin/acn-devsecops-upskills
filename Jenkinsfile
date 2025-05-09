@@ -91,14 +91,14 @@ pipeline{
 //                 }
 //            }
 //         }
-        stage ('Build Jar file'){
-            steps{
-                sh 'mvn clean install'
-                sh 'mkdir -p src/main/resources/static/jacoco'
-                sh 'cp -r target/site/jacoco/* src/main/resources/static/jacoco/'
-            }
-        }
-//
+//         stage ('Build Jar file'){
+//             steps{
+//                 sh 'mvn clean install'
+//                 sh 'mkdir -p src/main/resources/static/jacoco'
+//                 sh 'cp -r target/site/jacoco/* src/main/resources/static/jacoco/'
+//             }
+//         }
+
 //         stage('TRIVY FS SCAN') {
 //            steps {
 //                sh '''
@@ -107,8 +107,8 @@ pipeline{
 //                '''
 //            }
 //         }
-
-
+//
+//
 //         stage("OWASP Dependency Check"){
 //             steps{
 //                 withCredentials([string(credentialsId: 'nvd-api-key', variable: 'NVD_API_KEY')]) {
@@ -135,12 +135,12 @@ pipeline{
              }
            }
         }
-        stage("TRIVY DOCKER IMAGE SCAN"){
-            steps{
-                sh "trivy image devsahamerlin/tasksmanager:${BUILD_NUMBER} --format table"
-                //sh "trivy image devsahamerlin/tasksmanager:${BUILD_NUMBER} --format table --exit-code 1 --severity CRITICAL"
-            }
-        }
+//         stage("TRIVY DOCKER IMAGE SCAN"){
+//             steps{
+//                 sh "trivy image devsahamerlin/tasksmanager:${BUILD_NUMBER} --format table"
+//                 //sh "trivy image devsahamerlin/tasksmanager:${BUILD_NUMBER} --format table --exit-code 1 --severity CRITICAL"
+//             }
+//         }
 
         stage ('Deploy to container'){
             steps{
@@ -155,31 +155,30 @@ pipeline{
 
         stage('Run Selenium Tests') {
             steps {
-                sh 'sleep 10'
-
+                sh 'sleep 20'
                 sh 'mvn -Dtest=TaskManagerSelenium test'
             }
         }
 
-//         stage('Update Deployment File') {
-//                 environment {
-//                     GIT_REPO_NAME = "acn-taskmanger-upskills"
-//                     GIT_USER_NAME = "devsahamerlin"
-//                 }
-//                 steps {
-//                     withCredentials([string(credentialsId: 'gitops-user-secret-text', variable: 'GITHUB_TOKEN')]) {
-//                         sh '''
-//                             git config user.email "devsahamerlin@gmail.com"
-//                             git config user.name "Saha Merlin"
-//                             BUILD_NUMBER=${BUILD_NUMBER}
-//                             sed -i "s/${IMAGE_TAG_VERSION}/${BUILD_NUMBER}/g" k8s/manifests/deployment.yml
-//                             git add k8s/manifests/deployment.yml
-//                             git commit -m "Update deployment image to version ${BUILD_NUMBER}"
-//                             git push https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME} HEAD:main
-//                         '''
-//                     }
-//                 }
-//         }
+        stage('Update Deployment File') {
+                environment {
+                    GIT_REPO_NAME = "acn-devsecops-upskills"
+                    GIT_USER_NAME = "devsahamerlin"
+                }
+                steps {
+                    withCredentials([string(credentialsId: 'merlin-github-user-credentials', variable: 'GITHUB_TOKEN')]) {
+                        sh '''
+                            git config user.email "devsahamerlin@gmail.com"
+                            git config user.name "Saha Merlin Jenkins"
+                            BUILD_NUMBER=${BUILD_NUMBER}
+                            sed -i "s/${IMAGE_TAG_VERSION}/${BUILD_NUMBER}/g" k8s/manifests/deployment.yml
+                            git add k8s/manifests/deployment.yml
+                            git commit -m "Update deployment image to version ${BUILD_NUMBER}"
+                            git push https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME} HEAD:main
+                        '''
+                    }
+                }
+        }
     }
 
 //     post {

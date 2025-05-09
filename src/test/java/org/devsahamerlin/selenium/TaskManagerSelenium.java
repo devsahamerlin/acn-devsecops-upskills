@@ -1,18 +1,19 @@
 package org.devsahamerlin.selenium;
 
-import io.github.bonigarcia.wdm.WebDriverManager;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.firefox.FirefoxOptions;
+import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+import java.net.URL;
 import java.time.Duration;
 import java.util.List;
 import java.util.UUID;
@@ -35,21 +36,42 @@ class TaskManagerSelenium {
 
     private final String baseUrl = System.getProperty("selenium.url", "http://129.151.250.111:8083");
 
-    @BeforeAll
-    static void setupClass() {
-        WebDriverManager.chromedriver().setup();
-    }
-
     @BeforeEach
     void setUp() {
-        // Set up Chrome in headless mode for CI environments
-        ChromeOptions options = new ChromeOptions();
-        options.addArguments("--headless");
-        options.addArguments("--no-sandbox");
-        options.addArguments("--disable-dev-shm-usage");
-        options.addArguments("--remote-allow-origins=*");
+        try {
+            System.out.println("Attempting Firefox setup...");
+            FirefoxOptions options = new FirefoxOptions();
+            options.addArguments("--headless");
+            options.addArguments("--no-sandbox");
+            options.addArguments("--disable-dev-shm-usage");
 
-        driver = new ChromeDriver(options);
+            driver = new FirefoxDriver(options);
+        } catch (Exception e) {
+            System.out.println("Firefox failed: " + e.getMessage());
+
+            try {
+                System.out.println("Attempting manual geckodriver setup...");
+                System.setProperty("webdriver.gecko.driver", "/home/ubuntu/geckodriver");
+                FirefoxOptions options = new FirefoxOptions();
+                options.addArguments("--headless");
+                options.addArguments("--no-sandbox");
+                options.addArguments("--disable-dev-shm-usage");
+                driver = new FirefoxDriver(options);
+            } catch (Exception e2) {
+                System.out.println("Manual geckodriver failed: " + e2.getMessage());
+
+                try {
+                    System.out.println("Attempting remote webdriver...");
+                    DesiredCapabilities capabilities = new DesiredCapabilities();
+                    capabilities.setBrowserName("firefox");
+                    driver = new RemoteWebDriver(new URL("http://localhost:4444/wd/hub"), capabilities);
+                } catch (Exception e3) {
+                    System.out.println("All browser attempts failed");
+                    throw new RuntimeException("Unable to initialize any browser", e3);
+                }
+            }
+        }
+
         wait = new WebDriverWait(driver, Duration.ofSeconds(10));
         driver.manage().window().maximize();
 
@@ -80,7 +102,6 @@ class TaskManagerSelenium {
         descriptionInput.sendKeys(taskDescription);
         submitButton.click();
 
-        // Wait for page to reload after submission
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".card-header")));
         wait = new WebDriverWait(driver, Duration.ofSeconds(10));
 
