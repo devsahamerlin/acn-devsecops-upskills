@@ -8,12 +8,12 @@ pipeline{
         SCANNER_HOME=tool 'sonar-scanner'
     }
     stages{
-        stage ('Clean Workspace'){
+        stage ('🧹 Clean Workspace'){
             steps{
                 cleanWs()
             }
         }
-        stage('Restore Previous Artifacts') {
+        stage('♻️ Restore Previous Artifacts') {
           steps {
             script {
 
@@ -30,7 +30,7 @@ pipeline{
           }
         }
 
-        stage('Clean Containers') {
+        stage('🧼 Clean Containers') {
             steps {
                script {
                   sh '''
@@ -46,7 +46,7 @@ pipeline{
                }
             }
         }
-        stage ('Checkout SCM') {
+        stage ('📥 Checkout Source Code') {
             steps {
                 script {
                     git branch: 'main',
@@ -55,25 +55,25 @@ pipeline{
                 }
             }
         }
-        stage ('Compile with Maven') {
+        stage ('🛠️ Compile with Maven') {
             steps {
                 sh 'mvn clean compile'
             }
         }
-        stage ('Run Unit Tests') {
+        stage ('✅ Run Unit Tests') {
             steps {
                 sh 'mvn test'
             }
         }
 
-        stage ('Verify Build') {
+        stage ('🔁 Verify Build') {
             steps {
                 sh 'mvn clean verify'
             }
         }
 
 
-        stage("📊 (SAST) Analysis"){
+        stage("📊 (SAST) SonarQube Analysis"){
             steps{
                 withSonarQubeEnv('merlin-sonar-server') {
                     sh ''' mvn sonar:sonar \
@@ -84,14 +84,14 @@ pipeline{
             }
         }
 
-        stage("🚦 (SAST) Quality Gate"){
+        stage("🚦 (SAST) SonarQube Quality Gate"){
             steps {
                 script {
                   waitForQualityGate abortPipeline: false, credentialsId: 'merlin-sonar-token'
                 }
            }
         }
-        stage ('Package JAR'){
+        stage ('📦 Package JAR'){
             steps{
                 sh 'mvn clean install'
                 sh 'mkdir -p src/main/resources/static/jacoco'
@@ -99,7 +99,7 @@ pipeline{
             }
         }
 
-        stage('Trivy FS Scan') {
+        stage('🔍 Trivy Filesystem Scan') {
            steps {
                sh '''
                     trivy fs --format table .
@@ -109,7 +109,7 @@ pipeline{
         }
 
 
-        stage("(SCA) OWASP Check"){
+        stage("🧪 (SCA) OWASP Dependency Check"){
             steps{
                 withCredentials([string(credentialsId: 'nvd-api-key', variable: 'NVD_API_KEY')]) {
                     dependencyCheck additionalArguments: "--scan ./ --format XML --nvdApiKey ${NVD_API_KEY}", odcInstallation: 'DPD-Check'
@@ -118,7 +118,7 @@ pipeline{
             }
         }
 
-        stage('Build & Push Docker Image') {
+        stage('🚀 Build & Push Docker Image') {
            environment {
              DOCKER_IMAGE = "devsahamerlin/tasksmanager:${BUILD_NUMBER}"
              REGISTRY_CREDENTIALS = credentials('merlin-docker')
@@ -135,14 +135,14 @@ pipeline{
              }
            }
         }
-        stage("Trivy Docker Scan"){
+        stage("🐳 Trivy Docker Image Scan"){
             steps{
                 sh "trivy image devsahamerlin/tasksmanager:${BUILD_NUMBER} --format table"
                 //sh "trivy image devsahamerlin/tasksmanager:${BUILD_NUMBER} --format table --exit-code 1 --severity CRITICAL"
             }
         }
 
-        stage ('Deploy Container'){
+        stage ('📡 Deploy Container'){
             steps{
                 sh """
                     sudo docker ps -a --filter name=merlin-tasksmanager -q | xargs -r sudo docker stop
@@ -153,14 +153,14 @@ pipeline{
             }
         }
 
-        stage('Run Selenium UI Tests') {
+        stage('🤖 Run Selenium UI Tests') {
             steps {
                 sh 'sleep 20'
                 sh 'mvn -Dtest=TaskManagerSelenium test'
             }
         }
 
-//         stage('GitOps Deploy') {
+//         stage('Push to Git (for ArgoCD GitOps)') {
 //                 environment {
 //                     GIT_REPO_NAME = "acn-devsecops-upskills"
 //                     GIT_USER_NAME = "devsahamerlin"

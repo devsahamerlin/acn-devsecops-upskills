@@ -1,4 +1,4 @@
-# DevSecOps Workshop: Java/Spring CI/CD Pipeline with Security Practices
+# DevSecOps Workshop: Java/Spring CI/CD Pipeline with Security Practices (2025)
 
 ## Table of Contents
 - [Introduction](#introduction-to-the-workshop)
@@ -52,7 +52,9 @@ The pipeline integrates:
 - Container image security scanning (Trivy)
 - Automated deployment with GitOps principles (ArgoCD)
 
-Workshop video: [YouTube - Java/Spring CI/CD with DevSecOps Practices](https://www.youtube.com/watch?v=mvBNh6scVHk)
+![Jenkins-DevSecOps-oci.svg](images%2FJenkins-DevSecOps-oci.svg)
+
+Example of this implementation(Old version 2023): [YouTube - Java/Spring CI/CD with DevSecOps Practices](https://www.youtube.com/watch?v=mvBNh6scVHk)
 
 ## Workshop Objectives
 
@@ -75,8 +77,6 @@ Our workshop environment runs on Oracle Cloud Infrastructure and follows this ar
 - **Deployment Environment**: Kubernetes cluster for application hosting
 - **GitOps**: ArgoCD for declarative deployments
 - **Infrastructure as Code**: Terraform for environment provisioning
-
-![Jenkins DevSecOps OCI Architecture](images/Jenkins%20DevSecOps%20OCI%20Image.drawio.png)
 
 ## DevSecOps pipeline workflow:
 
@@ -515,6 +515,8 @@ Common issues and resolutions:
 - **SonarQube Quality Gate Failures**: Review code quality issues in SonarQube dashboard
 - **Docker Build Errors**: Ensure Docker daemon is running on Jenkins agent
 - **ArgoCD Sync Issues**: Check Git repository permissions and webhook configuration
+
+
 
 ## Conclusion
 
