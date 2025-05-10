@@ -275,6 +275,7 @@ We'll install these essential Jenkins plugins, nstall the following plugins via 
   - Docker Pipeline
   - Docker API
   - Docker-build-step (Deprecated)
+- Blue Ocean
 - Build Pipeline (Optional and Deprecated)
 - Kubernetes integration plugins **(Optional)**:
   - Kubernetes Credentials
@@ -505,6 +506,11 @@ Create a Jenkinsfile in your application repository with the following stages:
 
 Common issues and resolutions:
 
+- **Selenium Run Error**: Verify Operating System Architecture, Vérifier `uname -m (x86_64 vs aarch64)`
+- **Docker Permission Denied**: Ensure Docker daemon is running and user is in the Docker group
+- **SonarQube Connection Issues**: Check SonarQube server URL and authentication token
+- **GitHub Webhook Failures**: Verify webhook URL and GitHub repository settings
+- **ArgoCD Sync Failures**: Check Git repository permissions and ArgoCD application settings
 - **Jenkins Agent Connection Failures**: Verify SSH key permissions and network connectivity
 - **SonarQube Quality Gate Failures**: Review code quality issues in SonarQube dashboard
 - **Docker Build Errors**: Ensure Docker daemon is running on Jenkins agent
@@ -518,11 +524,10 @@ The skills you gain will help you transition from traditional development practi
 
 ## Additional Resources
 
-- Workshop GitHub repository: [Link to be provided]
-- Terraform templates: [Link to be provided]
-- Sample Java application: [Link to be provided]
-- Pipeline templates: [Link to be provided]
-- Documentation and reference guides: [Link to be provided]
+- Workshop GitHub repository: https://github.com/devsahamerlin/acn-devsecops-upskills
+- Terraform IaC: https://github.com/devsahamerlin/acn-devsecops-upskills/tree/main/terraform
+- Sample Java application: https://github.com/devsahamerlin/acn-devsecops-upskills (in root directory `src`)
+- Pipeline : `Jenkinsfile` https://github.com/devsahamerlin/acn-devsecops-upskills/blob/main/Jenkinsfile
 
 ## References
 

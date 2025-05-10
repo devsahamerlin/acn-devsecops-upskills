@@ -8,12 +8,12 @@ pipeline{
         SCANNER_HOME=tool 'sonar-scanner'
     }
     stages{
-        stage ('clean Workspace'){
+        stage ('Clean Workspace'){
             steps{
                 cleanWs()
             }
         }
-        stage('Get Previous Successfully Build Number') {
+        stage('Restore Previous Artifacts') {
           steps {
             script {
 
@@ -30,7 +30,7 @@ pipeline{
           }
         }
 
-        stage('Clean existing containers') {
+        stage('Clean Containers') {
             steps {
                script {
                   sh '''
@@ -46,7 +46,7 @@ pipeline{
                }
             }
         }
-        stage ('checkout scm') {
+        stage ('Checkout SCM') {
             steps {
                 script {
                     git branch: 'main',
@@ -55,25 +55,25 @@ pipeline{
                 }
             }
         }
-        stage ('maven compile') {
+        stage ('Compile with Maven') {
             steps {
                 sh 'mvn clean compile'
             }
         }
-        stage ('maven Test') {
+        stage ('Run Unit Tests') {
             steps {
                 sh 'mvn test'
             }
         }
 
-        stage ('maven clean verify') {
+        stage ('Verify Build') {
             steps {
                 sh 'mvn clean verify'
             }
         }
 
 
-        stage("Sonarqube Analysis "){
+        stage("📊 (SAST) Analysis"){
             steps{
                 withSonarQubeEnv('merlin-sonar-server') {
                     sh ''' mvn sonar:sonar \
@@ -84,14 +84,14 @@ pipeline{
             }
         }
 
-        stage("quality gate"){
+        stage("🚦 (SAST) Quality Gate"){
             steps {
                 script {
                   waitForQualityGate abortPipeline: false, credentialsId: 'merlin-sonar-token'
                 }
            }
         }
-        stage ('Build Jar file'){
+        stage ('Package JAR'){
             steps{
                 sh 'mvn clean install'
                 sh 'mkdir -p src/main/resources/static/jacoco'
@@ -99,7 +99,7 @@ pipeline{
             }
         }
 
-        stage('TRIVY FS SCAN') {
+        stage('Trivy FS Scan') {
            steps {
                sh '''
                     trivy fs --format table .
@@ -109,7 +109,7 @@ pipeline{
         }
 
 
-        stage("OWASP Dependency Check"){
+        stage("(SCA) OWASP Check"){
             steps{
                 withCredentials([string(credentialsId: 'nvd-api-key', variable: 'NVD_API_KEY')]) {
                     dependencyCheck additionalArguments: "--scan ./ --format XML --nvdApiKey ${NVD_API_KEY}", odcInstallation: 'DPD-Check'
@@ -118,7 +118,7 @@ pipeline{
             }
         }
 
-        stage('Build and Push Docker Image') {
+        stage('Build & Push Docker Image') {
            environment {
              DOCKER_IMAGE = "devsahamerlin/tasksmanager:${BUILD_NUMBER}"
              REGISTRY_CREDENTIALS = credentials('merlin-docker')
@@ -135,14 +135,14 @@ pipeline{
              }
            }
         }
-        stage("TRIVY DOCKER IMAGE SCAN"){
+        stage("Trivy Docker Scan"){
             steps{
                 sh "trivy image devsahamerlin/tasksmanager:${BUILD_NUMBER} --format table"
                 //sh "trivy image devsahamerlin/tasksmanager:${BUILD_NUMBER} --format table --exit-code 1 --severity CRITICAL"
             }
         }
 
-        stage ('Deploy to container'){
+        stage ('Deploy Container'){
             steps{
                 sh """
                     sudo docker ps -a --filter name=merlin-tasksmanager -q | xargs -r sudo docker stop
@@ -153,14 +153,14 @@ pipeline{
             }
         }
 
-        stage('Run Selenium Tests') {
+        stage('Run Selenium UI Tests') {
             steps {
                 sh 'sleep 20'
                 sh 'mvn -Dtest=TaskManagerSelenium test'
             }
         }
 
-//         stage('Update Deployment File') {
+//         stage('GitOps Deploy') {
 //                 environment {
 //                     GIT_REPO_NAME = "acn-devsecops-upskills"
 //                     GIT_USER_NAME = "devsahamerlin"
