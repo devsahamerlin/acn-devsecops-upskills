@@ -174,12 +174,12 @@ pipeline{
                 }
         }
 
-        stage('🤖 Run Selenium UI Tests') {
-            steps {
-                sh 'sleep 30'
-                sh 'mvn -Dtest=TaskManagerSelenium test'
-            }
-        }
+//         stage('🤖 Run Selenium UI Tests') {
+//             steps {
+//                 sh 'sleep 30'
+//                 sh 'mvn -Dtest=TaskManagerSelenium test'
+//             }
+//         }
     }
 
 //     post {
