@@ -165,7 +165,7 @@ pipeline{
                             git config user.email "devsahamerlin@gmail.com"
                             git config user.name "DevOps Team Jenkins"
                             BUILD_NUMBER=${BUILD_NUMBER}
-                            sed -i "s/${IMAGE_TAG_VERSION}/${BUILD_NUMBER}/g" k8s/manifests/deployment.yml
+                            sed -i "s/latest/${BUILD_NUMBER}/g" k8s/manifests/deployment.yml
                             git add k8s/manifests/deployment.yml
                             git commit -m "Update deployment image to version ${BUILD_NUMBER}"
                             git push https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME} HEAD:main
