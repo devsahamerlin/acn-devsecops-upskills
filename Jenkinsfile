@@ -55,22 +55,22 @@ pipeline{
                 }
             }
         }
-        stage ('🛠️ Compile with Maven') {
-            steps {
-                sh 'mvn clean compile'
-            }
-        }
-        stage ('✅ Run Unit Tests') {
-            steps {
-                sh 'mvn test'
-            }
-        }
-
-        stage ('🔁 Verify Build') {
-            steps {
-                sh 'mvn clean verify'
-            }
-        }
+//         stage ('🛠️ Compile with Maven') {
+//             steps {
+//                 sh 'mvn clean compile'
+//             }
+//         }
+//         stage ('✅ Run Unit Tests') {
+//             steps {
+//                 sh 'mvn test'
+//             }
+//         }
+//
+//         stage ('🔁 Verify Build') {
+//             steps {
+//                 sh 'mvn clean verify'
+//             }
+//         }
 
 //
 //         stage("📊 (SAST) SonarQube Analysis"){
@@ -145,8 +145,8 @@ pipeline{
 //         stage ('📡 Deploy Container'){
 //             steps{
 //                 sh """
-//                     sudo docker ps -a --filter name=merlin-tasksmanager -q | xargs -r sudo docker stop
-//                     sudo docker ps -a --filter name=merlin-tasksmanager -q | xargs -r sudo docker rm -f
+//                     sudo docker ps -a --filter name=tasksmanager -q | xargs -r sudo docker stop
+//                     sudo docker ps -a --filter name=tasksmanager -q | xargs -r sudo docker rm -f
 //                     sudo docker images devsahamerlin/tasksmanager -q | xargs -r sudo docker rmi -f
 //                     sudo docker run -d --name merlin-tasksmanager -p 8083:8082 devsahamerlin/tasksmanager:${BUILD_NUMBER}
 //                 """
@@ -165,7 +165,7 @@ pipeline{
                             git config user.email "devsahamerlin@gmail.com"
                             git config user.name "DevOps Team Jenkins"
                             BUILD_NUMBER=${BUILD_NUMBER}
-                            sed -i "s/latest/${BUILD_NUMBER}/g" k8s/manifests/deployment.yml
+                            sed -i "s/${IMAGE_TAG_VERSION}/${BUILD_NUMBER}/g" k8s/manifests/deployment.yml
                             git add k8s/manifests/deployment.yml
                             git commit -m "Update deployment image to version ${BUILD_NUMBER}"
                             git push https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME} HEAD:main

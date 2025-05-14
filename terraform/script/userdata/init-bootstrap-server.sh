@@ -76,11 +76,13 @@ curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -
 sudo apt install -y nodejs
 node -v
 
-#kubectl create namespace argocd
-#kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
-#sleep 4m
-# kubectl get nodes
-# kubectl get pods -n argocd
-# kubectl get svc -n argocd
-#kubectl port-forward svc/argocd-server -n argocd --address 0.0.0.0 8088:443 >> /dev/null 2>&1 &
+kubectl create namespace argocd
+kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+sleep 4m
+kubectl get nodes
+kubectl get pods -n argocd
+kubectl get svc -n argocd
+kubectl port-forward svc/argocd-server -n argocd --address 0.0.0.0 8088:443 >> /dev/null 2>&1 &
 # kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath='{.data.password}' | base64 -d
+
+skDX7sZLFQlCdfsR

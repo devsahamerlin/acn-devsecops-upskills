@@ -16,6 +16,6 @@ spec:
     spec:
       containers:
         - name: merlin-tasksmanager-app
-          image: devsahamerlin/tasksmanager:latest
+          image: devsahamerlin/tasksmanager:18
           ports:
             - containerPort: 8082

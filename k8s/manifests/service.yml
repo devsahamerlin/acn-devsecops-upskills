@@ -3,7 +3,7 @@ kind: Service
 metadata:
   name: merlin-tasksmanager-app-service
 spec:
-  type: NodePort
+  type: LoadBalancer
   ports:
     - name: http
       port: 8082
