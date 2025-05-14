@@ -202,7 +202,7 @@ SSH into your provisioned Jenkins instance:
 ```shell
 ssh -i <ssh-private-key-path> ubuntu@<your-public-ip-address>
 # Example:
-ssh -i ~/.ssh/acn_workshop ubuntu@129.151.255.201
+ssh -i ~/.ssh/acn_workshop ubuntu@79.72.30.220
 
 # If you want to add a specific public keys
 echo "ssh-rsa AAAAB3NzaC1yc2E... your_key_here" >> ~/.ssh/authorized_keys

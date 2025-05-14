@@ -1,13 +1,13 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: tasksmanager-app-service
+  name: merlin-tasksmanager-app-service
 spec:
   type: NodePort
   ports:
     - name: http
       port: 8082
-      targetPort: 8082
+      targetPort: 8083
       protocol: TCP
   selector:
-    app: tasksmanager-app
+    app: merlin-tasksmanager-app
