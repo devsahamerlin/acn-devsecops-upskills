@@ -1,21 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: tasksmanager-app
+  name: merlin-tasksmanager-app
   labels:
-    app: tasksmanager-app
+    app: merlin-tasksmanager-app
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: tasksmanager-app
+      app: merlin-tasksmanager-app
   template:
     metadata:
       labels:
-        app: tasksmanager-app
+        app: merlin-tasksmanager-app
     spec:
       containers:
-        - name: tasksmanager-app
+        - name: merlin-tasksmanager-app
           image: devsahamerlin/tasksmanager:latest
           ports:
             - containerPort: 8082

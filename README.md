@@ -202,7 +202,7 @@ SSH into your provisioned Jenkins instance:
 ```shell
 ssh -i <ssh-private-key-path> ubuntu@<your-public-ip-address>
 # Example:
-ssh -i ~/.ssh/acn_workshop ubuntu@129.151.255.201
+ssh -i ~/.ssh/acn_workshop ubuntu@79.72.30.220
 
 # If you want to add a specific public keys
 echo "ssh-rsa AAAAB3NzaC1yc2E... your_key_here" >> ~/.ssh/authorized_keys
@@ -504,6 +504,8 @@ Create a Jenkinsfile in your application repository with the following stages:
 
 ## Troubleshooting
 
+![troubleshooting.png](images%2Ftroubleshooting.png)
+
 Common issues and resolutions:
 
 - **Selenium Run Error**: Verify Operating System Architecture, Vérifier `uname -m (x86_64 vs aarch64)`
@@ -516,7 +518,10 @@ Common issues and resolutions:
 - **Docker Build Errors**: Ensure Docker daemon is running on Jenkins agent
 - **ArgoCD Sync Issues**: Check Git repository permissions and webhook configuration
 
+## Final resulat after all Troubleshooting
+ Congratulations, your ready for Fast time to market with DevSecOps pipeline
 
+![resulat-with-blue-ocean.png](images%2Fresulat-with-blue-ocean.png)
 
 ## Conclusion
 
